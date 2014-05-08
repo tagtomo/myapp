@@ -1,3 +1,5 @@
+set :stage, :production
+
 # Simple Role Syntax
 # ==================
 # Supports bulk-adding hosts to roles, the primary server in each group
@@ -15,7 +17,7 @@ role :db,  %w{vagrant@192.168.33.20}
 # server list. The second argument is a, or duck-types, Hash and is
 # used to set extended properties on the server.
 
-server '192.168.33.20', user: 'vagrant', roles: %w{web app}, my_property: :my_value
+server '192.168.33.20', user: 'vagrant', roles: %w{web app db}, my_property: :my_value
 
 
 # Custom SSH Options

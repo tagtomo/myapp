@@ -24,10 +24,10 @@ set :log_level, :debug
 # set :pty, true
 
 # Default value for :linked_files is []
-# set :linked_files, %w{config/database.yml}
+set :linked_files, %w{config/database.yml}
 
 # Default value for linked_dirs is []
-# set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
+set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -35,8 +35,9 @@ set :log_level, :debug
 # Default value for keep_releases is 5
 set :keep_releases, 5
 
-set :rbenv_type, :user
-set :rbenv_ruby, '1.9.3'
+set :rbenv_path, '/opt/rbenv'
+set :rbenv_type, :system #system or user
+set :rbenv_ruby, '2.1.1'
 set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
 set :rbenv_map_bins, %w{rake gem bundle ruby rails}
 set :rbenv_roles, :all # default value
@@ -61,5 +62,26 @@ namespace :deploy do
       # end
     end
   end
+
+  desc 'Upload database.yml'
+  task :upload do
+    on roles(:app) do |host|
+      if test "[ ! -d #{shared_path}/config ]"
+        execute "mkdir -p #{shared_path}/config"
+      end
+      upload!('config/database.yml', "#{shared_path}/config/database.yml")
+    end
+  end
+  before :starting, 'deploy:upload'
+
+  desc 'pg_config bundle config'
+  task :bundle_pg_config do
+    on roles(:app) do |host|
+      within release_path do
+        execute :bundle, "config build.pg --with-pg-config=/usr/pgsql-9.3/bin/pg_config"
+       end
+    end
+  end
+  before 'bundler:install', 'deploy:bundle_pg_config'
 
 end
