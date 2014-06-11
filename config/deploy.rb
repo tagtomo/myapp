@@ -9,7 +9,7 @@ set :repo_url, 'git@github.com:tagtomo/myapp.git'
 
 # Default deploy_to directory is /var/www/my_app
 # set :deploy_to, '/var/www/my_app'
-set :deploy_to, '/home/vagrant/app'
+set :deploy_to, '/home/vagrant/app/myapp'
 
 # Default value for :scm is :git
 set :scm, :git
